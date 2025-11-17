@@ -1,0 +1,97 @@
+---
+
+
+
+
+- name: Deploy cloud-1 infrastructure
+  hosts: webservers
+  become: yes
+  roles:
+    - role: docker
+      tags: [docker, infrastructure, always]
+    
+    - role: security
+      tags: [security, infrastructure]
+    
+    - role: user_setup
+      tags: [user_setup, user, infrastructure, always]
+ 
+    - role: copy_inception
+      tags: [copy_inception, inception, always]
+
+    - role: mariadb_container
+      tags: [mariadb, database, containers]
+
+    - role: wordpress_container
+      tags: [wordpress, containers]
+
+    - role: nginx_container
+      tags: [nginx, webserver, containers]
+
+    - role: verify_ssl
+      tags: [verify_ssl, ssl, verification]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Aak ai to explain you every line on inceptiona nd your roles ...
+
+# Ask ai to draw foe you s chem taht explin how your could-1works ...
+
+
+# How your bgin x acript works and hoq to know which sever the dialnmae you are directed to ...
+
+# Test if you have a load balancing achem if not do it too 
+
+# Read the sijject make sure you  it feets it
+
+# Read the correctim file make surw it feets it 
+
+
+# how namecheap handel the connection to wish one you are directed - plys what nginx do in that script ...
+# 1 - go trou all the file understand evry thing line by line .
+# 2 - go trough the correction file - preper ansaer for each quetion 
+# 3 - go trough the sujcet make sure you made what you ve been ased for 
+# 4 - implment this project on an other one , or the same one the cluster laptop     
+# 5 - fiml a video for social media .... 
+
+
+
+# how it works? doamn name to servers ...
+
+# how to acess database
+
+
+#from the correction file 
+#Are the docker-compose organized to benefit from the cache?ie. Having the part that often changes at the END of the Dockerfile and the partthat does not change a lot (system dependencies) at the beginning?
+
+# tell ai to explain you you ansible and inception project file by file , it time for thiorique 
+
+# ask it to give you a scheme of you project to understand it more ...
+
+
+
+
+
+
+

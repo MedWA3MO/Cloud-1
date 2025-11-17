@@ -1,0 +1,9 @@
+---
+# Restarts Docker service when called by notify: restart docker
+- name : restart docker
+  systemd:
+      name: docker
+      state : restarted
+  
+
+

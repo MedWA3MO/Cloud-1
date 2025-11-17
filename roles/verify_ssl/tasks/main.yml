@@ -1,0 +1,24 @@
+---
+# Task 1: Test HTTPS connection
+- name: Verify HTTPS is working with valid SSL certificate
+  ansible.builtin.uri:
+    url: "https://{{ domain_name }}"
+    validate_certs: yes
+    return_content: no
+    status_code: [200, 301, 302]
+  register: https_test
+  ignore_errors: yes
+  tags: [verify_ssl, ssl]
+
+# Task 2: Display result
+- name: Display SSL verification result
+  ansible.builtin.debug:
+    msg: "SSL/TLS is working! Site is accessible via HTTPS"
+  when: https_test.status is defined and (https_test.status == 200 or https_test.status == 301 or https_test.status == 302)
+  tags: [verify_ssl, ssl]
+
+- name: SSL verification failed
+  ansible.builtin.debug:
+    msg: "SSL verification failed."
+  when: https_test.failed
+  tags: [verify_ssl, ssl]

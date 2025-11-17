@@ -1,0 +1,46 @@
+---
+
+- name: Build Nginx image
+  shell: |
+    cd /home/mohamed/inception/srcs
+    docker compose build nginx
+  become: yes
+  become_user: mohamed
+  args:
+    executable: /bin/bash
+
+- name: Start Nginx container
+  shell: |
+    cd /home/mohamed/inception/srcs
+    docker compose up -d nginx
+  become: yes
+  become_user: mohamed
+  args:
+    executable: /bin/bash
+
+- name: Wait for Nginx to start
+  pause:
+    seconds: 10
+
+- name: Verify Nginx is running
+  shell: docker ps --filter "name=nginx" --filter "status=running"
+  become: yes
+  become_user: mohamed
+  register: nginx_status
+  retries: 10
+  delay: 5
+  until: nginx_status.stdout != ""
+
+- name: Display Nginx status
+  debug:
+    msg: "Nginx is running!"
+
+- name: chain my domain to duckdns
+  shell: |
+    cd /home/mohamed/inception/srcs
+    docker compose exec nginx sh -c "curl -k https://www.duckdns.org/update?domains={{ domain_name }}&token=3c3457d6-8603-45da-ab2a-35081ff06810"
+  become: yes
+  become_user: mohamed
+  args:
+    executable: /bin/bash
+

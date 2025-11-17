@@ -1,0 +1,114 @@
+---
+- name: Install UFW 
+  apt:
+    name: ufw
+    state: present
+    update_cache: yes
+
+
+- name: Deny all incoming traffic by default
+  ufw:
+    direction: incoming
+    policy: deny
+
+- name: Allow all outgoing traffic
+  ufw:
+    direction: outgoing
+    policy: allow
+
+- name: allow SSH port 22
+  ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+    comment: 'SSH'
+
+- name: Allow HTTP port 80
+  ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+    comment: 'HTTP'
+
+- name: Allow HTTPS port 443
+  ufw:
+    rule: allow
+    port: '443'
+    proto: tcp
+    comment: 'HTTPS'
+
+
+# Allow backend port 8443 only from your server IPs (more secure)
+# - name: Allow port 8443 from server1
+#   ufw:
+#     rule: allow
+#     port: '8443'
+#     proto: tcp
+#     from_ip: 161.35.207.242
+#     comment: 'Backend from server1'
+
+# - name: Allow port 8443 from server2
+#   ufw:
+#     rule: allow
+#     port: '8443'
+#     proto: tcp
+#     from_ip: 178.128.200.201
+#     comment: 'Backend from server2'
+
+# - name: Allow port 8443 from server3
+#   ufw:
+#     rule: allow
+#     port: '8443'
+#     proto: tcp
+#     from_ip: 165.232.123.218
+#     comment: 'Backend from server3'
+#--------------------------------------------
+
+
+
+
+
+
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+
+
+
+# - name: Disable root login via password (keys only)
+#   lineinfile:
+#     path: /etc/ssh/sshd_config
+#     regexp: '^#?PermitRootLogin'
+#     line: 'PermitRootLogin prohibit-password'
+#     state: present
+#   notify: restart sshd
+
+# - name: Disable password authentication (SSH keys only)
+#   lineinfile:
+#     path: /etc/ssh/sshd_config
+#     regexp: '^#PasswordAuthentication'
+#     line: 'PasswordAuthentication no'
+#     state: present
+#   notify: restart sshd
+
+# - name: Install fail2ban (block brute force attacks)
+#   apt:
+#     name: fail2ban
+#     state: present
+
+# - name: Start and enable fail2ban
+#   service:
+#     name: fail2ban
+#     state: started
+#     enabled: yes
+
+
+
+
+
+
+
+
+
+

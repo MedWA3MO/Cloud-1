@@ -1,0 +1,26 @@
+---
+- name : Practice defrent ansible modules
+  hosts : local
+  tasks:
+
+  - name: create a directory
+    file :
+      path : /tmp/ansible-demo
+      state: directory
+      mode: '0755'
+
+  - name: copy a file with content
+    copy:
+      content: |
+        This is a demo file
+        Created by ansible
+        date one day in 2025
+      dest: /tmp/ansible-demo/demo.txt
+
+  - name: List directory content
+    shell: ls -la /tmp/ansible-demo
+    register: dir_contents
+
+  - name: show directory contents
+    debug:
+      var: dir_contents.stdout_lines

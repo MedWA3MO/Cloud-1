@@ -1,0 +1,44 @@
+---
+- name: Ensure WordPress data directory exists
+  file:
+    path: /opt/inception/data/wordpress
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+
+- name: Build WordPress image
+  shell: |
+    cd /home/mohamed/inception/srcs
+    docker compose build wordpress
+  become: yes
+  become_user: mohamed
+  args:
+    executable: /bin/bash
+
+- name: Start WordPress container
+  shell: |
+    cd /home/mohamed/inception/srcs
+    echo "y" | docker compose up -d wordpress
+  become: yes
+  become_user: mohamed
+  args:
+    executable: /bin/bash
+
+- name: Wait for WordPress to start
+  pause:
+    seconds: 20
+
+- name: Verify WordPress is running
+  shell: docker ps --filter "name=wordpress" --filter "status=running"
+  become: yes
+  become_user: mohamed
+  register: wordpress_status
+  retries: 10
+  delay: 5
+  until: wordpress_status.stdout != ""
+
+- name: Display WordPress status
+  debug:
+    msg: "WordPress is running!"

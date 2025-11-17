@@ -1,0 +1,87 @@
+---
+
+# - name: Remove old MariaDB volume (force clean slate)
+#   shell: docker volume rm srcs_mariadb_v 2>&1 || true
+#   become: yes
+#   become_user: mohamed
+#   ignore_errors: yes
+
+# - name: Build MariaDB image
+#   shell: |
+#     cd /home/mohamed/inception/srcs
+#     docker compose build --no-cache mariadb
+#   become: yes
+#   become_user: mohamed
+#   args:
+#     executable: /bin/bash
+
+# - name: Start MariaDB container (force recreate)
+#   shell: |
+#     cd /home/mohamed/inception/srcs
+#     docker compose up -d --force-recreate --renew-anon-volumes mariadb
+#   become: yes
+#   become_user: mohamed
+#   args:
+#     executable: /bin/bash
+
+# - name: Wait for MariaDB to start
+#   pause:
+#     seconds: 10
+
+
+# - name: Create MariaDB data directory
+#   file:
+#     path: /home/mohamed/data/mariadb
+#     state: directory
+#     owner: mohamed
+#     group: mohamed
+#     mode: '0755'
+- name: Ensure MariaDB data directory exists
+  file:
+    path: /opt/inception/data/mariadb
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Build MariaDB image
+  shell: |
+    cd /home/mohamed/inception/srcs
+    docker compose build 
+  become: yes
+  become_user: mohamed
+  args:
+    executable: /bin/bash
+
+- name: Start MariaDB container  
+  shell: |
+    cd /home/mohamed/inception/srcs
+    echo "y" | docker compose up -d mariadb
+  become: yes
+  become_user: mohamed
+  args:
+    executable: /bin/bash
+
+- name: Wait for MariaDB to start
+  pause:
+    seconds: 20
+
+- name: Verify MariaDB is running
+  shell: docker ps --filter "name=mariadb" --filter "status=running"
+  become: yes
+  become_user: mohamed
+  register: mariadb_status
+  retries: 10
+  delay: 5
+  until: mariadb_status.stdout != ""
+
+- name: Display MariaDB status
+  debug:
+    msg: " MariaDB is running!"
+
+
+
+
+
+
+

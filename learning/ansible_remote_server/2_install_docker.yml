@@ -1,0 +1,25 @@
+---
+- name: Install Docker
+  hosts: remoteservers
+  become: yes
+
+  tasks:
+  - name: Update apt cache
+    apt:
+      update_cache: yes
+
+  - name: Install Docker
+    apt:
+      name: docker.io
+      state: present
+
+  - name: Install Docker Python library
+    apt:
+      name: python3-docker
+      state: present
+
+  - name: Start Docker service
+    service:
+      name: docker
+      state: started
+      enabled: yes

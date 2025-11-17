@@ -1,0 +1,29 @@
+---
+
+- name : Copy entire inception project to server
+  copy:
+    src: "{{ playbook_dir }}/inception/"
+    dest: "/home/{{ intra_login }}/inception"
+    owner: "{{ intra_login }}"
+    group: "{{ intra_login }}"
+    mode: preserve
+  tags: [user]
+
+
+
+
+
+
+
+- name : Create Volume directories  
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ intra_login }}"
+    group: "{{ intra_login }}"
+    mode: '0755'
+  loop:
+    - "/home/{{ intra_login }}/data"
+    - "/home/{{ intra_login }}/data/mariadb"
+    - "/home/{{ intra_login }}/data/wordpress"
+  tags: [user]

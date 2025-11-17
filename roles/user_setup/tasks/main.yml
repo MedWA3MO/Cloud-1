@@ -1,0 +1,45 @@
+---
+- name: Create user matching intra login
+  user:
+    name: "{{ intra_login }}"
+    state: present
+    shell: /bin/bash
+    create_home: yes
+    groups: docker
+    append: yes
+  tags: [user]
+
+
+- name: Add user to sudoers group
+  user:
+    name: "{{ intra_login }}"
+    groups: sudo
+    append: yes
+  tags: [user, sudo]
+
+- name: Allow user to run sudo without password (optional - NOT recommended)
+  lineinfile:
+    path: /etc/sudoers.d/{{ intra_login }}
+    line: "{{ intra_login }} ALL=(ALL) NOPASSWD:ALL"
+    create: yes
+    mode: '0440'
+    validate: 'visudo -cf %s'
+  tags: [user, sudo]
+  when: true  # Change to true if you want passwordless sudo
+
+  
+
+# - name: Create inception directory structure
+#   file:
+#     path: "{{ item }}"
+#     state: directory
+#     owner: "{{ intra_login }}"
+#     group: "{{ intra_login }}"
+#     mode: '0755'
+#   loop:
+#     - "/home/{{ intra_login }}/data"
+#     - "/home/{{ intra_login }}/data/mariadb"
+#     - "/home/{{ intra_login }}/data/wordpress"
+#   tags: [user]
+
+

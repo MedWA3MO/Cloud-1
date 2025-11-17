@@ -1,0 +1,13 @@
+---
+- name : My first playbook
+  hosts: local
+  tasks:
+    - name: Create a file
+      file:
+        path: /tmp/wa3mo.txt
+        state: touch
+
+    - name: add content to file
+      lineinfile:
+        path: /tmp/wa3mo.txt
+        line: "Hello from simo..."

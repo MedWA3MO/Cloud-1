@@ -1,0 +1,18 @@
+
+---
+- name: basic server setup 
+  hosts: remoteservers
+  become: yes
+
+  tasks:
+  - name: create test directory
+    file: 
+      path: /opt/test
+      state: directory
+      mode: '0755'
+
+  - name: create test file
+    copy:
+      content: "hello from ansible on this remote server..."
+      dest: /opt/test/info.txt
+      mode: '0644'

@@ -1,0 +1,200 @@
+
+local machine -----------------
+
+ansible all -i inventory -m ping
+
+ansible-playbook -i inventory YOUR_PLAYBOOKd.yml
+
+
+remote machine --------------------------
+ssh root@68.183.219.105
+
+ssh root@164.90.218.80
+
+or 
+
+ssh -i ~/.ssh/id_ed25519 root@46.101.96.66
+
+
+path =>  cd ~/.ssh
+
+
+testing the ansible 
+ansible -i inventory.ini remoteservers -m ping
+
+runing a playbook
+ansible-playbook -i inventory.ini YOUR_PLAYBOOK.yml
+
+check a docker exit --------------------------
+
+
+
+ansible-playbook -i inventory.ini 2_install_docker.yml
+ansible -i inventory.ini remoteservers -a "docker --version"
+
+ansible-playbook -i inventory.ini 3_install_docker_compose.yml
+ansible -i inventory.ini remoteservers -a "docker-compose --version"
+
+===>  -a stands for "argument" - it runs a raw shell command on the remote server.
+
+-----------------------------------------------------
+
+46.101.96.66
+64.226.120.234
+134.122.94.26
+
+----------------------------------------
+# Ping all servers
+ansible all -m ping
+# Check Ubuntu version on all servers
+ansible all -a "lsb_release -a"
+
+-------------------------------------------
+
+# Check Docker is installed on all servers
+ansible all -a "docker --version"
+
+# Check Docker Compose plugin
+ansible all -a "docker compose version"
+
+# Check Docker is running
+ansible all -a "systemctl status docker" --one-line
+
+-----------------------------------
+
+ansible all -a "ufw status"
+-------------------------------------
+
+ansible-playbook deploy.yml
+
+# Or deploy only inception (skip docker & security)
+
+
+ansible-playbook deploy.yml --tags inception
+
+
+ansible webservers -a "docker ps"
+
+ansible webservers -a "ls -la /opt/inception"
+
+# Check logs
+ansible webservers -a "docker compose -f /opt/inception/srcs/docker-compose.yml logs"
+
+--------------------------------
+
+ansible-playbook deploy.yml --tags user_setup
+
+Verify User Was Created:
+ansible webservers -a "id mohamed"
+
+
+# Check directories
+ansible webservers -a "ls -la /home/mohamed/"
+
+# Check data folders
+ansible webservers -a "ls -la /home/mohamed/data/"
+
+# Test docker access (without sudo!)
+ansible webservers -a "docker ps" --become-user mohamed
+-------------------------------
+ansible webservers -a "ls -la /home/mohamed/" --become-user mohamed
+-----------------------------------
+
+# Check if user exists
+ansible webservers -a "id mohamed"
+
+# Check if inception files are on server
+ansible webservers -a "ls -la /home/mohamed/inception/" --become-user mohamed
+
+# Check if docker works for user
+ansible webservers -a "docker ps" --become-user mohamed
+
+
+
+----------------------------------------------------------
+
+ansible webservers -m shell -a "cd /home/mohamed/inception/srcs && docker compose build mariadb" --become-user mohamed
+
+ansible webservers -a "docker images" --become-user mohamed
+
+####################
+
+ansible-playbook deploy.yml --tags copy_inception
+
+---------------------------------------------------------
+
+### running the cotainer using ansible :
+
+build containers ...
+ansible webservers -m shell -a "cd /home/mohamed/inception/srcs && docker compose build --no-cache" --become-user mohamed
+
+run them ...
+ansible webservers -m shell -a "cd /home/mohamed/inception/srcs && docker compose up -d" --become-user mohamed
+
+### running inside the server :-----------------
+
+su - mohamed
+
+cd /home/mohamed/inception/srcs
+
+sudo docker compose build --no-cache
+
+sudo docker compose up     (without -d so we can see the process ...)
+
+---------------------------------------------------------
+
+docker exec -it d2f0e5c2c871 bash
+
+
+46.101.96.66
+64.226.120.234
+134.122.94.26
+
+
+
+docker compose build --no-cache mariadb
+docker compose up -d mariadb
+
+# Build MariaDB
+docker compose build --no-cache mariadb
+
+# Start MariaDB
+docker compose up -d mariadb
+
+----------------------------------------------
+
+
+
+ansible all -m shell -a "docker image prune -a -f" --become-user mohamed
+
+ansible all -m shell -a "cd /home/mohamed/inception/srcs && docker compose down -v" --become-user mohamed
+
+---------------------------------------------
+
+ssh root@161.35.207.242
+
+certbot certonly \
+  --manual \
+  --preferred-challenges dns \
+  -d livroai.com \
+  -d www.livroai.com \
+  --agree-tos \
+  --email hassandib2000000@gmail.com
+
+
+Type:  TXT Record
+Host:  _acme-challenge.www
+Value: bL_87od2ZLi3mtxAZpQ3o6M0y08AdbA26Tc2FLto9nY
+TTL:   1 min
+
+Type:  TXT Record
+Host:  _acme-challenge
+Value: ZGJyOepdgKwTh6FYbvEFdPueCmK8BTq0UZ1U_lBVasI
+TTL:   1 min
+
+# From your laptop, check both records
+dig TXT _acme-challenge.livroai.com
+dig TXT _acme-challenge.www.livroai.com
+
+
+------------------------------------------

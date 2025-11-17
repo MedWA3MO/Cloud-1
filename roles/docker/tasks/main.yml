@@ -1,0 +1,95 @@
+---
+- name: Update apt cache (if cash is older than one hour)
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install required packages for docker  
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+      - software-properties-common 
+    state: present
+
+- name: Create directory for docker GPG key 
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Add docker GPG key
+  shell: |
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  args:
+    creates: /etc/apt/keyrings/docker.gpg  #creates: makes this idempotent (only runs if file doesn't exist)
+
+- name: Set permission on docker GPG key (Makes the key readable)
+  file:
+    path: /etc/apt/keyrings/docker.gpg
+    mode: '0644'
+
+- name: Add docker repository to apt source
+  shell: | 
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+  args:
+    creates: /etc/apt/sources.list.d/docker.list
+
+- name: Update apt after adding apt repository
+  apt:
+    update_cache: yes
+
+- name: Install docker packages
+  apt: 
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+  notify: restart docker #notify: triggers the handler
+
+- name: Ensure docker is running (started & enabled)
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Verify docker is working
+  command: docker --version
+  register: docker_version
+  changed_when: false
+
+- name: Display docker version in ansible output
+  debug: 
+    msg: "Docker installed : {{ docker_version.stdout }}"
+
+
+
+- name: Stop all Docker containers
+  ansible.builtin.shell: docker stop $(docker ps -aq) || true
+
+- name: Remove all Docker containers
+  ansible.builtin.shell: docker rm $(docker ps -aq) || true
+
+- name: Remove all Docker images
+  ansible.builtin.shell: docker rmi -f $(docker images -q) || true
+
+- name: Remove all Docker volumes
+  ansible.builtin.shell: docker volume rm $(docker volume ls -q) || true
+
+- name: Prune unused Docker objects
+  ansible.builtin.shell: docker system prune -af --volumes
+
+
+
+
+
+
+
+
+
